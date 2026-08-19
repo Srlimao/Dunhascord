@@ -7,6 +7,9 @@ on:
       - 'v*'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: windows-latest
@@ -28,7 +31,7 @@ jobs:
         run: npm ci
 
       - name: Compile Native Audio Loopback Engine
-        run: scripts\compile-native.bat
+        run: cmd /c "scripts\compile-native.bat"
 
       - name: Build Web & Standalone Dist Package
         run: npm run build
@@ -49,3 +52,5 @@ jobs:
           draft: false
           prerelease: false
           generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
