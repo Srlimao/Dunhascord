@@ -3,7 +3,9 @@ const path = require('path');
 const fs = require('fs');
 const { spawn, exec } = require('child_process');
 
-app.commandLine.appendSwitch('disable-features', 'WebRtcAllowWgcScreenCapturer,WebRtcAllowWgcWindowCapturer');
+app.commandLine.appendSwitch('log-level', '3');
+app.commandLine.appendSwitch('disable-logging');
+app.commandLine.appendSwitch('disable-features', 'WebRtcAllowWgcScreenCapturer,WebRtcAllowWgcWindowCapturer,WebRtcAllowWgcZeroHz');
 app.commandLine.appendSwitch('enable-features', 'WebRTCPipeWireCapturer');
 app.commandLine.appendSwitch('enable-webrtc-hide-local-ips-with-mdns', 'false');
 
@@ -60,11 +62,42 @@ function stopAudioProcess() {
 }
 
 function getAudioBinPath() {
-  const localBin = path.join(__dirname, '../bin/process_audio_capture.exe');
-  if (fs.existsSync(localBin)) return localBin;
-  const resBin = path.join(process.resourcesPath || '', 'src/bin/process_audio_capture.exe');
-  if (fs.existsSync(resBin)) return resBin;
-  return localBin;
+  const possiblePaths = [];
+
+  if (process.resourcesPath) {
+    possiblePaths.push(
+      path.join(process.resourcesPath, 'process_audio_capture.exe'),
+      path.join(process.resourcesPath, 'src', 'bin', 'process_audio_capture.exe'),
+      path.join(process.resourcesPath, 'app.asar.unpacked', 'src', 'bin', 'process_audio_capture.exe')
+    );
+  }
+
+  if (app && typeof app.getAppPath === 'function') {
+    const appPath = app.getAppPath();
+    if (appPath.includes('app.asar')) {
+      possiblePaths.push(
+        path.join(appPath.replace('app.asar', 'app.asar.unpacked'), 'src', 'bin', 'process_audio_capture.exe')
+      );
+    }
+  }
+
+  // Development fallback paths (unpacked filesystem)
+  possiblePaths.push(
+    path.join(__dirname, '../bin/process_audio_capture.exe'),
+    path.join(__dirname, '../../src/bin/process_audio_capture.exe'),
+    path.join(process.cwd(), 'src', 'bin', 'process_audio_capture.exe')
+  );
+
+  for (const binPath of possiblePaths) {
+    // Only return path if it physically exists on disk and is NOT inside virtual app.asar
+    if (fs.existsSync(binPath) && !binPath.includes('app.asar\\') && !binPath.includes('app.asar/')) {
+      console.log('[Electron Audio] Found native audio binary at:', binPath);
+      return binPath;
+    }
+  }
+
+  console.warn('[Electron Audio] Warning: Native audio binary not found in standard paths, falling back to relative path');
+  return path.join(__dirname, '../bin/process_audio_capture.exe');
 }
 
 ipcMain.handle('select-desktop-source', (event, sourceId) => {
@@ -98,11 +131,19 @@ ipcMain.handle('start-process-audio-capture', async (event, sourceInfo) => {
   }
 
   const args = targetArg.includes(' ') ? targetArg.split(' ') : [targetArg];
-  console.log('[Electron Audio] Spawning process_audio_capture with args:', args);
+  console.log('[Electron Audio] Spawning process_audio_capture from:', binPath, 'with args:', args);
 
   try {
     audioCaptureProcess = spawn(binPath, args, { stdio: ['ignore', 'pipe', 'inherit'] });
     let chunkCount = 0;
+
+    audioCaptureProcess.on('error', (err) => {
+      console.error('[Electron Audio] Failed to spawn audio capturer process:', err);
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send('process-audio-error', err.message);
+      }
+      audioCaptureProcess = null;
+    });
 
     audioCaptureProcess.stdout.on('data', (chunk) => {
       chunkCount++;

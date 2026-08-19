@@ -40,14 +40,14 @@ jobs:
         run: npm run dist:electron
 
       - name: Package Dist into Zip
-        run: Compress-Archive -Path dist\* -DestinationPath Dunhascord-Server-v1.0.0-windows.zip -Force
+        run: Compress-Archive -Path dist\* -DestinationPath Dunhascord-Server-windows.zip -Force
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: Dunhascord-Builds
           path: |
-            Dunhascord-Server-v1.0.0-windows.zip
+            Dunhascord-Server-windows.zip
             release-builds/*.exe
 
       - name: Create GitHub Release
@@ -55,8 +55,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            release-builds/Dunhascord-v1.0.0-Portable.exe
-            Dunhascord-Server-v1.0.0-windows.zip
+            release-builds/*.exe
+            Dunhascord-Server-windows.zip
             src/bin/process_audio_capture.exe
           draft: false
           prerelease: false

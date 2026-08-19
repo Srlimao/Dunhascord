@@ -1,6 +1,6 @@
 {
   "name": "dunhascord",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Discord-style Voice Chat, Noise Suppression, and 1080p60 Multi-Screen Sharing with Native Game Audio Loopback",
   "main": "src/electron/main.js",
   "scripts": {
@@ -22,7 +22,14 @@
       "src/**/*",
       "package.json"
     ],
+    "asarUnpack": [
+      "src/bin/**/*"
+    ],
     "extraResources": [
+      {
+        "from": "src/bin/process_audio_capture.exe",
+        "to": "process_audio_capture.exe"
+      },
       {
         "from": "src/bin/process_audio_capture.exe",
         "to": "src/bin/process_audio_capture.exe"
