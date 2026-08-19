@@ -1,0 +1,19 @@
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# MSVC Build files
+*.obj
+*.pdb
+*.exp
+*.ilk
+
+# Certificates generated locally
+.cert/*.pem
+
+# Keep the compiled native binary
+!src/bin/process_audio_capture.exe

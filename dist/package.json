@@ -1,0 +1,14 @@
+{
+  "name": "streamhub-dist",
+  "version": "1.0.0",
+  "description": "Standalone 1080p 60fps WebRTC Screen Sharing Server",
+  "main": "src/server/server.js",
+  "scripts": {
+    "start": "node src/server/server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "selfsigned": "^2.4.1",
+    "ws": "^8.18.0"
+  }
+}

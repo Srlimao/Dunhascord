@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dunhascord - Voice & 1080p 60fps Screen Share</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Entry / Join Modal -->
+  <div id="join-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="logo-badge">⚡ Dunhascord</div>
+        <h2>Voice & Screen Share</h2>
+        <p>Ultra low-latency Discord room with high-fidelity audio & 60 FPS video.</p>
+      </div>
+
+      <div class="form-group">
+        <label for="room-input">Room Code</label>
+        <input type="text" id="room-input" placeholder="e.g. gaming-night">
+      </div>
+
+      <div class="form-group">
+        <label for="name-input">Your Display Name</label>
+        <input type="text" id="name-input" placeholder="e.g. Alex" autofocus>
+      </div>
+
+      <button id="join-btn" class="primary-btn full-width">Connect to Room</button>
+    </div>
+  </div>
+
+  <!-- Main Room View -->
+  <div id="room-view" class="room-container hidden">
+    <!-- Top Header Bar -->
+    <header class="top-nav">
+      <div class="nav-left">
+        <div class="brand-title">⚡ Dunhascord</div>
+        <div id="current-room-badge" class="badge room-badge">🔊 Voice: General</div>
+        <div id="peer-count-badge" class="badge peer-badge">👥 1 Connected</div>
+      </div>
+
+      <div class="nav-right">
+        <div class="selector-wrap">
+          <label for="preset-select">Quality:</label>
+          <select id="preset-select" class="dropdown-select"></select>
+        </div>
+
+        <button id="copy-link-btn" class="action-btn icon-btn-header" title="Invite Friends">
+          <span>🔗</span> Invite
+        </button>
+      </div>
+    </header>
+
+    <!-- App Body: Voice Bar + Main Screen Stage -->
+    <div class="main-layout">
+      <!-- Top/Side Voice Channel Grid -->
+      <section class="voice-channel-section">
+        <div class="section-title">VOICE CHANNEL</div>
+        <div id="voice-grid" class="voice-grid"></div>
+      </section>
+
+      <!-- Main Multi-Stream Video Stage -->
+      <main class="stage-container">
+        <div id="stream-grid" class="stream-grid empty">
+          <div class="empty-state">
+            <div class="empty-icon">🎮</div>
+            <h3>Voice Connected</h3>
+            <p>Speak freely with noise suppression. Click <strong>"Share Screen"</strong> below to stream any app or game in 1080p 60 FPS.</p>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Bottom Discord-Style User Control Dock -->
+    <footer class="bottom-dock">
+      <div class="dock-user-profile">
+        <div class="avatar-ring mini">
+          <div id="dock-avatar" class="user-avatar mini">U</div>
+          <div id="dock-halo" class="speaking-halo mini"></div>
+        </div>
+        <div class="dock-user-details">
+          <span id="dock-username" class="dock-name">User</span>
+          <div class="mic-level-bar"><div id="mic-level-fill" class="mic-level-fill"></div></div>
+        </div>
+      </div>
+
+      <div class="dock-controls">
+        <button id="mic-mute-btn" class="dock-btn" title="Mute Microphone">
+          <span class="dock-icon">🎙️</span>
+          <span class="dock-label">Mute</span>
+        </button>
+
+        <button id="deafen-btn" class="dock-btn" title="Deafen (Mute All Audio)">
+          <span class="dock-icon">🎧</span>
+          <span class="dock-label">Deafen</span>
+        </button>
+
+        <button id="noise-filter-btn" class="dock-btn is-active-filter" title="Toggle Noise Suppression">
+          <span class="dock-icon">🛡️</span>
+          <span class="dock-label">Noise Filter</span>
+        </button>
+
+        <button id="share-screen-btn" class="dock-btn primary-dock-btn" title="Share Screen / Window">
+          <span class="dock-icon">🖥️</span>
+          <span class="dock-label">Share Screen</span>
+        </button>
+
+        <button id="leave-btn" class="dock-btn disconnect-btn" title="Disconnect">
+          <span class="dock-icon">🚪</span>
+          <span class="dock-label">Disconnect</span>
+        </button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Electron Window / Screen Picker Modal -->
+  <div id="source-picker-modal" class="modal-overlay hidden">
+    <div class="modal-card wide-modal">
+      <div class="modal-header">
+        <h2>Select Screen or Application Window</h2>
+        <p>Select what you want to share with your friends in 1080p 60 FPS.</p>
+      </div>
+      <div id="source-cards-grid" class="source-cards-grid"></div>
+      <button id="cancel-picker-btn" class="secondary-btn full-width">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Invite / Share Modal -->
+  <div id="invite-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="logo-badge">🔗 Invite Friends</div>
+        <h2>Shareable Room Links</h2>
+        <p>Send one of these links to your friends to join via Electron or Web Browser.</p>
+      </div>
+      <div id="invite-links-container" class="invite-links-list"></div>
+      <button id="close-invite-modal-btn" class="secondary-btn full-width">Close</button>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
