@@ -1,5 +1,6 @@
 const { app, BrowserWindow, ipcMain, desktopCapturer, session } = require('electron');
 const path = require('path');
+const fs = require('fs');
 const { spawn, exec } = require('child_process');
 
 app.commandLine.appendSwitch('disable-features', 'WebRtcAllowWgcScreenCapturer,WebRtcAllowWgcWindowCapturer');
@@ -57,6 +58,14 @@ function stopAudioProcess() {
   }
 }
 
+function getAudioBinPath() {
+  const localBin = path.join(__dirname, '../bin/process_audio_capture.exe');
+  if (fs.existsSync(localBin)) return localBin;
+  const resBin = path.join(process.resourcesPath || '', 'src/bin/process_audio_capture.exe');
+  if (fs.existsSync(resBin)) return resBin;
+  return localBin;
+}
+
 ipcMain.handle('select-desktop-source', (event, sourceId) => {
   currentSelectedSourceId = sourceId;
   return true;
@@ -65,7 +74,7 @@ ipcMain.handle('select-desktop-source', (event, sourceId) => {
 // IPC: Start native WASAPI audio capture matching window name, HWND or PID
 ipcMain.handle('start-process-audio-capture', async (event, sourceInfo) => {
   stopAudioProcess();
-  const binPath = path.join(__dirname, '../bin/process_audio_capture.exe');
+  const binPath = getAudioBinPath();
   let targetArg = '0';
 
   if (typeof sourceInfo === 'number') {

@@ -7,7 +7,33 @@
     "start": "node src/server/server.js",
     "dev": "node src/server/server.js --dev",
     "electron": "electron .",
-    "build": "node scripts/build.js"
+    "build": "node scripts/build.js",
+    "dist:electron": "electron-builder --win portable"
+  },
+  "build": {
+    "appId": "com.srlimao.dunhascord",
+    "productName": "Dunhascord",
+    "win": {
+      "target": [
+        "portable"
+      ]
+    },
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "src/bin/process_audio_capture.exe",
+        "to": "src/bin/process_audio_capture.exe"
+      }
+    ],
+    "portable": {
+      "artifactName": "Dunhascord-v${version}-Portable.exe"
+    },
+    "directories": {
+      "output": "release-builds"
+    }
   },
   "repository": {
     "type": "git",
@@ -29,6 +55,7 @@
     "ws": "^8.18.0"
   },
   "devDependencies": {
-    "electron": "^34.2.0"
+    "electron": "^34.2.0",
+    "electron-builder": "^25.1.8"
   }
 }

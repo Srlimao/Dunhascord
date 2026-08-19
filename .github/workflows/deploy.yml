@@ -36,21 +36,27 @@ jobs:
       - name: Build Web & Standalone Dist Package
         run: npm run build
 
-      - name: Package Dist into Zip
-        run: Compress-Archive -Path dist\* -DestinationPath Dunhascord-v1.0.0-windows.zip -Force
+      - name: Build Portable Electron App (.exe)
+        run: npm run dist:electron
 
-      - name: Upload Build Artifacts
+      - name: Package Dist into Zip
+        run: Compress-Archive -Path dist\* -DestinationPath Dunhascord-Server-v1.0.0-windows.zip -Force
+
+      - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Dunhascord-Dist
-          path: dist/
+          name: Dunhascord-Builds
+          path: |
+            Dunhascord-Server-v1.0.0-windows.zip
+            release-builds/*.exe
 
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            Dunhascord-v1.0.0-windows.zip
+            release-builds/Dunhascord-v1.0.0-Portable.exe
+            Dunhascord-Server-v1.0.0-windows.zip
             src/bin/process_audio_capture.exe
           draft: false
           prerelease: false
