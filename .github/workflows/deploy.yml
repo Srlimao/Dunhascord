@@ -28,13 +28,16 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm install
 
       - name: Compile Native Audio Loopback Engine
         run: cmd /c "scripts\compile-native.bat"
 
       - name: Build Web & Standalone Dist Package
         run: npm run build
+
+      - name: Package Dist into Zip
+        run: Compress-Archive -Path dist\* -DestinationPath Dunhascord-v1.0.0-windows.zip -Force
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
@@ -47,7 +50,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/*
+            Dunhascord-v1.0.0-windows.zip
             src/bin/process_audio_capture.exe
           draft: false
           prerelease: false
