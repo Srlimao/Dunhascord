@@ -38,9 +38,10 @@ function createWindow() {
     }
   });
 
-  const port = process.env.PORT || 3000;
-  mainWindow.loadURL(`http://localhost:${port}`).catch(() => {
-    mainWindow.loadURL('http://localhost:3005').catch(() => {
+  const remoteServer = process.env.SERVER_URL || 'http://dunhas.ddns.net:3000';
+  mainWindow.loadURL('http://localhost:3000').catch(() => {
+    console.log('[Electron] Local server not active, connecting to remote server:', remoteServer);
+    mainWindow.loadURL(remoteServer).catch(() => {
       mainWindow.loadFile(path.join(__dirname, '../client/index.html'));
     });
   });

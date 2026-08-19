@@ -24,8 +24,13 @@ export class MeshManager {
   }
 
   connect() {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}`;
+    let wsUrl;
+    if (window.location.host && !window.location.protocol.startsWith('file')) {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      wsUrl = `${protocol}//${window.location.host}`;
+    } else {
+      wsUrl = 'ws://dunhas.ddns.net:3000';
+    }
     this.ws = new WebSocket(wsUrl);
 
     this.ws.onopen = () => {
